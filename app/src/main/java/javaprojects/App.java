@@ -12,131 +12,215 @@ public class App {
         LemonadeGame game = new LemonadeGame();
 
         boolean running = true;
+        int day = 1;
 
         System.out.println("Welcome to my Lemonade Stand!");
 
         while (running) {
 
-            System.out.println("\n Choose any option you would like to start with!");
-            System.out.println("1.Check balance");
-            System.out.println("2.Buy lemons");
-            System.out.println("3.Buy sugar");
-            System.out.println("4.Create a recipe");
-            System.out.println("5.View recipe");
-            System.out.println("6.Exit the Lemonade Stand");
-            System.out.print("Enter a corresponding number: ");
+            boolean preparing = true;
 
-            if (!scanner.hasNextInt()) {
-                System.out.println("Input is Invalid. Enter a proper number.");
-                scanner.nextLine();
-                continue;
+            System.out.println("\n~~~~~ DAY " + day + " ~~~~~");
+
+            while (preparing && running) {
+            
+
+                System.out.println("\n Choose any option you like!");
+                System.out.println("1.Check balance");
+                System.out.println("2.Buy lemons");
+                System.out.println("3.Buy sugar");
+                System.out.println("4.Create a recipe");
+                System.out.println("5.View recipe");
+                System.out.println("6.Set selling price");
+                System.out.println("7.Make lemonade");
+                System.out.println("8.Start selling");
+                System.out.println("9.Exit the Lemonade Stand");
+                System.out.print("Enter a corresponding number: ");
+
+                if (!scanner.hasNextInt()) {
+                    System.out.println("Input is Invalid. Enter a proper number.");
+                    scanner.nextLine();
+                    continue;
+                }
+
+                int choice = scanner.nextInt();
+
+                if (choice == 1) {
+
+                    System.out.println("\nMoney: $" + game.getMoney());
+                    System.out.println("Lemons: " + game.getLemons());
+                    System.out.println("Sugar: " + game.getSugar());
+
+                } else if (choice == 2) {
+
+                    System.out.print("How many lemons? ");
+
+                    if (!scanner.hasNextInt()) {
+                        System.out.println("Invalid amount.");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                    int lemonAmount = scanner.nextInt();
+
+                    if (game.buyLemons(lemonAmount)) {
+                        System.out.println("Lemons purchased!");
+                    } else {
+                        System.out.println("Purchase failed.");
+                    }
+
+                } else if (choice == 3) {
+
+                    System.out.print("How many cups of sugar? ");
+
+                    if (!scanner.hasNextInt()) {
+                        System.out.println("Invalid amount.");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                    int sugarAmount = scanner.nextInt();
+
+                    if (game.buySugar(sugarAmount)) {
+                        System.out.println("Sugar purchased!");
+                    } else {
+                        System.out.println("Purchase failed.");
+                    }
+
+                } else if (choice == 4) {
+
+                    System.out.print("Lemons per pitcher: ");
+
+                    if (!scanner.hasNextInt()) {
+                        System.out.println("Invalid amount.");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                    int lemons = scanner.nextInt();
+
+                    System.out.print("Sugar per pitcher: ");
+
+                    if (!scanner.hasNextInt()) {
+                        System.out.println("Invalid amount.");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                    int sugar = scanner.nextInt();
+
+                    System.out.print("Water per pitcher: ");
+
+                    if (!scanner.hasNextInt()) {
+                        System.out.println("Invalid amount.");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                    int water = scanner.nextInt();
+
+                    if (game.setRecipe(lemons, sugar, water)) {
+                        System.out.println("Recipe created!");
+                    } else {
+                        System.out.println("Invalid recipe.");
+                    }
+
+                } else if (choice == 5) {
+
+                    Recipe recipe = game.getRecipe();
+
+                    if (recipe == null) {
+                        System.out.println("There is no recipe yet.");
+                    } else {
+                        System.out.println("\nCurrent recipe:");
+                        System.out.println("Lemons: " + recipe.getLemons());
+                        System.out.println("Sugar: " + recipe.getSugar());
+                        System.out.println("Water: " + recipe.getWater());
+                    }
+
+                } else if (choice == 6) {
+
+                        System.out.print("Enter price per cup: $");
+
+                        if (!scanner.hasNextDouble()) {
+                            System.out.println("Invalid price.");
+                            scanner.nextLine();
+                            continue;
+                        }
+
+                        double price = scanner.nextDouble();
+
+                        if (game.setPrice(price)) {
+                            System.out.println("Price is $" + game.getPrice());
+                        } else {
+                            System.out.println("Invalid price.");
+                        }
+
+                } else if (choice == 7) {
+
+                        System.out.print("How many pitchers? ");
+
+                        if (!scanner.hasNextInt()) {
+                            System.out.println("Invalid amount.");
+                            scanner.nextLine();
+                            continue;
+                        }
+
+                        int pitchers = scanner.nextInt();
+
+                        if (game.makeLemonade(pitchers)) {
+                            System.out.println("Lemonade prepared!");
+                            System.out.println("Available cups: " + game.getLemonadeCups());
+                        } else {
+                            System.out.println("Not enough ingredients or invalid recipe.");
+                        }
+
+                } else if (choice == 8) {
+
+                        preparing = false;
+                        System.out.println("\nStarting selling phase");
+
+                } else if (choice == 9) {
+
+                        running = false;
+                        preparing = false;
+                        System.out.println("Thanks for playing my game!");
+
+                } else {
+
+                    System.out.println("Invalid option. Try again.");
+                }
             }
 
-            int choice = scanner.nextInt();
+            if (running) {
 
-            if (choice == 1) {
+                System.out.println("\n~~~~~ SELLING PHASE ~~~~~");
 
-                System.out.println("\nMoney: $" + game.getMoney());
-                System.out.println("Lemons: " + game.getLemons());
-                System.out.println("Sugar: " + game.getSugar());
+                double moneyBefore = game.getMoney();
+                int cupsSold = game.sellLemonade();
+                double earnings = game.getMoney() - moneyBefore;
+                
+                System.out.println("Customers visited: " + game.getCustomerCount());
+                System.out.println("Cups sold: " + cupsSold);
+                System.out.println("Money earned: $" + earnings);
+                System.out.println("Current money: $" + game.getMoney());
 
-            } else if (choice == 2) {
+                if (game.getCustomerCount() > cupsSold) {
+                    System.out.println((game.getCustomerCount() - cupsSold) + " customers left without lemonade :(");
+                } else if (game.getCustomerCount() < cupsSold) {
+                    System.out.println("\nUnfortunately, unsold lemonade has been dumped on the street :(");
 
-                System.out.print("How many lemons? ");
-
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Invalid amount.");
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int lemonAmount = scanner.nextInt();
-
-                if (game.buyLemons(lemonAmount)) {
-                    System.out.println("Lemons purchased!");
                 } else {
-                    System.out.println("Purchase failed.");
+                    System.out.println("\nEvery customer got lemonade!");
+                    System.out.println("No lemonade was wasted!");
                 }
 
-            } else if (choice == 3) {
+                System.out.println("Remaining lemons: " + game.getLemons());
+                System.out.println("Remaining sugar: " + game.getSugar());
 
-                System.out.print("How many cups of sugar? ");
+                day++;
 
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Invalid amount.");
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int sugarAmount = scanner.nextInt();
-
-                if (game.buySugar(sugarAmount)) {
-                    System.out.println("Sugar purchased!");
-                } else {
-                    System.out.println("Purchase failed.");
-                }
-
-            } else if (choice == 4) {
-
-                System.out.print("Lemons per pitcher: ");
-
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Invalid amount.");
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int lemons = scanner.nextInt();
-
-                System.out.print("Sugar per pitcher: ");
-
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Invalid amount.");
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int sugar = scanner.nextInt();
-
-                System.out.print("Water per pitcher: ");
-
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Invalid amount.");
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int water = scanner.nextInt();
-
-                if (game.setRecipe(lemons, sugar, water)) {
-                    System.out.println("Recipe created!");
-                } else {
-                    System.out.println("Invalid recipe.");
-                }
-
-            } else if (choice == 5) {
-
-                Recipe recipe = game.getRecipe();
-
-                if (recipe == null) {
-                    System.out.println("There is no recipe yet.");
-                } else {
-                    System.out.println("\nCurrent recipe:");
-                    System.out.println("Lemons: " + recipe.getLemons());
-                    System.out.println("Sugar: " + recipe.getSugar());
-                    System.out.println("Water: " + recipe.getWater());
-                }
-
-            } else if (choice == 6) {
-
-                running = false;
-                System.out.println("Thank you for playing my game!");
-                System.out.println("Have a good day!");
-
-            } else {
-
-                System.out.println("Invalid option. Try again.");
-
+                System.out.println("\nMoving to the next day");
             }
         }
 
