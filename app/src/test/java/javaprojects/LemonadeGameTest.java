@@ -217,7 +217,7 @@ public class LemonadeGameTest {
         double moneyBeforeSales = game.getMoney();
         int cupsSold = game.sellLemonade();
 
-        assertTrue(cupsSold >= 1);
+        assertTrue(cupsSold >= 0);
         assertTrue(cupsSold <= 8);
         assertEquals(moneyBeforeSales + cupsSold * 2.00,
         game.getMoney(), 0.001);
@@ -255,7 +255,7 @@ public class LemonadeGameTest {
 
         int cupsSold = game.sellLemonade();
 
-        assertTrue(cupsSold >= 1);
+        assertTrue(cupsSold >= 0);
         assertTrue(cupsSold <= 8);
 
         assertEquals(moneyBefore + cupsSold * 2.00,
@@ -267,11 +267,152 @@ public class LemonadeGameTest {
     @Test
     public void testCustomerCount() {
         LemonadeGame game = new LemonadeGame();
-
+        
+        game.setPrice(5.0);
         game.sellLemonade();
 
         assertTrue(game.getCustomerCount() >= 1);
         assertTrue(game.getCustomerCount() <= 500);
+    }
+
+    //Portfolio 2:Rent
+
+    @Test
+    public void testDailyRent() {
+        LemonadeGame game = new LemonadeGame();
+
+        assertTrue(game.payRent());
+        assertEquals(80.0, game.getMoney(), 0.001);
+        assertFalse(game.checkGameOver());
+    }
+
+    @Test
+    public void testNetWorth() {
+        LemonadeGame game = new LemonadeGame();
+
+        game.buyLemons(10);
+        game.buySugar(10);
+
+        assertEquals(100.0, game.getNetWorth(), 0.001);
+
+        game.payRent();
+
+        assertEquals(80.0, game.getNetWorth(), 0.001);
+    }
+
+    @Test
+    public void testGameContinuesAtZero() {
+        LemonadeGame game = new LemonadeGame();
+
+        for (int i = 0; i < 5; i++) {
+            assertTrue(game.payRent());
+        }
+
+        assertEquals(0.0, game.getNetWorth(), 0.001);
+        assertFalse(game.checkGameOver());
+    }
+
+    @Test
+    public void testBankruptcy() {
+        LemonadeGame game = new LemonadeGame();
+
+        for (int i = 0; i < 6; i++) {
+            game.payRent();
+        }
+
+        assertEquals(-20.0, game.getNetWorth(), 0.001);
+        assertTrue(game.checkGameOver());
+    }
+
+    @Test
+    public void testNoRentAfterBankruptcy() {
+        LemonadeGame game = new LemonadeGame();
+
+        for (int i = 0; i < 6; i++) {
+            game.payRent();
+        }
+
+        assertFalse(game.payRent());
+        assertEquals(-20.0, game.getMoney(), 0.001);
+    }
+
+    //Portfolio 2: SuppluNDemand
+
+    @Test
+    public void testFreeLemonadeSellsOut() {
+        LemonadeGame game = new LemonadeGame();
+
+        game.buyLemons(2);
+        game.buySugar(2);
+        game.setRecipe(1, 1, 6);
+        game.makeLemonade(2);
+        game.setPrice(0.0);
+
+        int cupsSold = game.sellLemonade();
+
+        assertEquals(16, cupsSold);
+        assertEquals(0, game.getLemonadeCups());
+        assertEquals(97.0, game.getMoney(), 0.001);
+    }
+
+    @Test
+    public void testMaximumPriceNoSales() {
+        LemonadeGame game = new LemonadeGame();
+
+        game.buyLemons(2);
+        game.buySugar(2);
+        game.setRecipe(1, 1, 6);
+        game.makeLemonade(2);
+        game.setPrice(10.0);
+
+        int cupsSold = game.sellLemonade();
+
+        assertEquals(0, game.getCustomerCount());
+        assertEquals(0, cupsSold);
+        assertEquals(97.0, game.getMoney(), 0.001);
+    }
+
+    @Test
+    public void testAboveMaximumPriceNoSales() {
+        LemonadeGame game = new LemonadeGame();
+
+        game.buyLemons(2);
+        game.buySugar(2);
+        game.setRecipe(1, 1, 6);
+        game.makeLemonade(2);
+        game.setPrice(15.0);
+
+        int cupsSold = game.sellLemonade();
+
+        assertEquals(0, game.getCustomerCount());
+        assertEquals(0, cupsSold);
+        assertEquals(97.0, game.getMoney(), 0.001);
+    }
+
+    @Test
+    public void testNormalPriceSales() {
+        LemonadeGame game = new LemonadeGame();
+
+        game.buyLemons(2);
+        game.buySugar(2);
+        game.setRecipe(1, 1, 6);
+        game.makeLemonade(2);
+        game.setPrice(5.0);
+
+        double moneyBefore = game.getMoney();
+
+        int cupsSold = game.sellLemonade();
+
+        assertTrue(game.getCustomerCount() >= 1);
+        assertTrue(game.getCustomerCount() <= 250);
+        assertTrue(cupsSold >= 0);
+        assertTrue(cupsSold <= 16);
+
+        assertEquals(Math.min(game.getCustomerCount(), 16),
+                     cupsSold);
+
+        assertEquals(moneyBefore + cupsSold * 5.0,
+                     game.getMoney(), 0.001);
     }
 
 }

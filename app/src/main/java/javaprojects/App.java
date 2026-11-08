@@ -22,6 +22,19 @@ public class App {
 
             System.out.println("\n~~~~~ DAY " + day + " ~~~~~");
 
+            //Portfolio 2:Rent addon
+            System.out.println("Daily rent: $20.00");
+
+            if (!game.payRent()) {
+                System.out.println("\nGame over! You made it to day " + day + " before going bankrupt!");
+                running = false;
+                break;
+            }
+
+            System.out.println("Rent paid!");
+            System.out.printf("Current money: $%.2f%n", game.getMoney());
+            System.out.printf("Net worth: $%.2f%n", game.getNetWorth());
+
             while (preparing && running) {
             
 
@@ -47,7 +60,7 @@ public class App {
 
                 if (choice == 1) {
 
-                    System.out.println("\nMoney: $" + game.getMoney());
+                    System.out.printf("\nMoney: $%.2f%n", game.getMoney());
                     System.out.println("Lemons: " + game.getLemons());
                     System.out.println("Sugar: " + game.getSugar());
 
@@ -151,7 +164,7 @@ public class App {
                         double price = scanner.nextDouble();
 
                         if (game.setPrice(price)) {
-                            System.out.println("Price is $" + game.getPrice());
+                            System.out.printf("Price is $%.2f%n", game.getPrice());
                         } else {
                             System.out.println("Invalid price.");
                         }
@@ -197,20 +210,24 @@ public class App {
                 System.out.println("\n~~~~~ SELLING PHASE ~~~~~");
 
                 double moneyBefore = game.getMoney();
+                int cupsPrepared = game.getLemonadeCups();
                 int cupsSold = game.sellLemonade();
                 double earnings = game.getMoney() - moneyBefore;
                 
                 System.out.println("Customers visited: " + game.getCustomerCount());
                 System.out.println("Cups sold: " + cupsSold);
-                System.out.println("Money earned: $" + earnings);
-                System.out.println("Current money: $" + game.getMoney());
+                System.out.printf("Money earned: $%.2f%n", earnings);
+                System.out.printf("Current money: $%.2f%n", game.getMoney());
 
                 if (game.getCustomerCount() > cupsSold) {
                     System.out.println((game.getCustomerCount() - cupsSold) + " customers left without lemonade :(");
-                } else if (game.getCustomerCount() < cupsSold) {
-                    System.out.println("\nUnfortunately, unsold lemonade has been dumped on the street :(");
+                }
 
-                } else {
+                if (cupsPrepared > cupsSold) {
+                    System.out.println((cupsPrepared - cupsSold) + " cups of unsold lemonade were wasted :(");
+                }
+
+                if (game.getCustomerCount() == cupsSold && cupsPrepared == cupsSold) {
                     System.out.println("\nEvery customer got lemonade!");
                     System.out.println("No lemonade was wasted!");
                 }
